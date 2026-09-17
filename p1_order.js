@@ -21,6 +21,7 @@
 //   await 는 그 함수 안에서만 기다린다. 함수를 부른 쪽은 안 기다린다.
 //
 // 커밋 메시지: p1: order predictions
+// 2차
 
 import { setTimeout as sleep } from "node:timers/promises";
 
