@@ -41,7 +41,8 @@ sleep(10).then(() => console.log("F"));
 
 console.log("G");
 
-// prediction:
-// actual:
-// why I was wrong (one line per miss):
-//
+// prediction: A D E G C F B
+// actual: A D G C F E B
+// why I was wrong (one line per miss): E가 F 뒤로 가야한다
+// await는 그 함수 안에서만 기다리고 함수를 부른 메인 프로그램인 전역 공간에서는 기다리지 않기 때문에
+// 30ms 동안 함수 안에서 기다릴 동안 바깥 공간에서는 남은 일을 처리하므로 E가 F 뒤로 가는 것이 맞다.
