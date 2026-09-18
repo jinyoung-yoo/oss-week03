@@ -31,12 +31,20 @@
 //
 // 커밋 메시지: p4: compare cities
 
+import chalk from "chalk";
 import { geocode, forecast } from "./p3_weather.js";
 
 const names = process.argv.slice(2);
 if (names.length === 0) {
   console.error("usage: node p4_compare.js <place> [place ...]");
   process.exit(1);
+}
+
+function paintMax(max) {
+  const s = max.toFixed(1);
+  if (max >= 30) return chalk.red(s);
+  if (max < 10) return chalk.blue(s);
+  return s;
 }
 
 // TODO:
@@ -68,7 +76,7 @@ results.forEach((a, i) => {
 fulfilled.sort((a, b) => b.max - a.max);
 
 fulfilled.forEach((s, i) => {
-  console.log(`${i + 1}. ${s.city.padEnd(8)} ${s.max.toFixed(1)}`);
+  console.log(`${i + 1}. ${chalk.bold(s.city.padEnd(8))} ${paintMax(s.max)}`);
 });
 
 rejected.forEach((s) => {
