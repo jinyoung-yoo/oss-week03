@@ -22,21 +22,42 @@
 //
 // 커밋 메시지: p3: forecast cli  /  p6: cache and offline
 
-import { geocode, forecast } from "./p3_weather.js";
+import fs from "node:fs/promises";
+import path from "node:path";
+
+import { geocode, fetchForecastRaw, parseForecast } from "./p3_weather.js"; 
 import { describe } from "./wmo.js";
 
 const args = process.argv.slice(2);
 const flags = args.filter((a) => a.startsWith("--"));          // ["--save"] 같은 것
 const name = args.find((a) => !a.startsWith("--")) ?? "Seoul"; // 플래그가 아닌 첫 인자
 
+const cachePath = path.join("cache", `${name.toLowerCase()}.json`);
+
 const WEEKDAY = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 function label(date) {                       // "2026-09-17" → "Thu 09-17"
   return `${WEEKDAY[new Date(date).getUTCDay()]} ${date.slice(5)}`;
 }
 
+let place, raw;
+
 try {
-  const place = await geocode(name);
-  const fc = await forecast(place);
+
+if (flags.includes("--offline")) {
+  try {
+    const text = await fs.readFile(cachePath, "utf8");
+    const cacheData = JSON.parse(text);
+    place = cacheData.place;
+    raw = cacheData.raw;
+  } catch {
+    throw new Error(`no cache for ${name.toLowerCase()}`);
+  }
+} else {
+  place = await geocode(name);
+  raw = await fetchForecastRaw(place);
+}
+
+  const fc = parseForecast(raw);
 
   // TODO (P3): 세 부분 출력
 
@@ -53,6 +74,14 @@ try {
   }
 
   // TODO (P6): --save, --offline (README 참고)
+
+  if (flags.includes("--save")) {
+  await fs.mkdir("cache", { recursive: true });
+  const cacheObject = { place, raw };
+  await fs.writeFile(cachePath, JSON.stringify(cacheObject, null, 2));
+  console.log(`saved ${cachePath}`);
+}
+
 } catch (err) {
   console.error("Error:", err.message);
   process.exit(1);
