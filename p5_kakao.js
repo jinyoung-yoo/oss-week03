@@ -80,7 +80,7 @@ try {
 
   // TODO: `Now at ${name}: ${temp.toFixed(1)}${unit}, ${describe(code)}`
   console.log(`Now at ${places[0].name}: ${fc.now.temp.toFixed(1)}${fc.now.unit}, ${describe(fc.now.code)}`);
-  
+
 } catch (err) {
   console.error("Error:", err.message);
   process.exit(1);
